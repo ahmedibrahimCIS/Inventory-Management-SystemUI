@@ -6,719 +6,891 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inventory Manager</title>
 
+    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 
+    <style>
+        body {
+            transition: background-color .3s, color .3s;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            min-height: 100vh;
+        }
+
+        /* Table */
+        thead th {
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+
+        tbody tr:hover {
+            background-color: rgba(37, 99, 235, 0.08);
+        }
+
+        .low-stock {
+            background-color: rgba(239, 68, 68, 0.15) !important;
+        }
+
+        /* DARK MODE */
+        .dark-mode {
+            background-color: #0f172a !important;
+            color: #e5e7eb;
+        }
+
+        .dark-mode .navbar,
+        .dark-mode .card,
+        .dark-mode .modal-content {
+            background-color: #020617 !important;
+            color: #e5e7eb;
+        }
+
+        .dark-mode .table th,
+        .dark-mode .table td {
+            color: #e5e7eb;
+            border-color: #334155;
+            color: black;
+        }
+
+        .dark-mode .table thead {
+            background-color: #1e293b;
+        }
+
+        .dark-mode input,
+        .dark-mode select {
+            background-color: #020617;
+            color: #e5e7eb;
+            border-color: #334155;
+        }
+
+        .dark-mode input::placeholder {
+            color: #94a3b8;
+        }
+
+        .dark-mode .btn-primary {
+            background-color: #2563eb;
+            border-color: #2563eb;
+        }
+
+        .dark-mode .btn-outline-dark {
+            color: #e5e7eb;
+            border-color: #475569;
+        }
+
+        @media print {
+
+            nav,
+            .sidebar,
+            .btn,
+            .pagination {
+                display: none !important;
+            }
+        }
+    </style>
 </head>
 
-<body class="bg-light ">
+<body class="bg-light">
 
     <div class="container-fluid">
-        <div class="row min-vh-100">
+        <div class="row">
 
-            <!-- Sidebar  -->
-            <div class="col-12 col-md-3 col-lg-2 d-none d-md-block bg-dark text-white p-0 ">
+            <!-- Sidebar -->
+            <aside class="col-md-2 d-none d-md-block bg-dark text-white sidebar p-0">
                 <div class="p-4 border-bottom">
-                    <h4 class="fw-bold mb-0">📦 InvTrack</h4>
+                    <h4 class="fw-bold">📦 InvTrack</h4>
                 </div>
 
-                <div class="d-flex flex-column p-3">
-                    <p class="text-uppercase text-secondary fw-bold mb-3">Categories</p>
-                    <div class="d-flex flex-column p-4 gap-2 ">
-                        <button class="btn btn-outline-primary btn-lg filter-btn active border-0 text-start"
-                            data-category="all">
-                            All
-                        </button>
-                        <button class="btn btn-outline-primary btn-lg filter-btn border-0 text-start text-white"
-                            data-category="Electronics">
-                            Electronics
-                        </button>
-                        <button class="btn btn-outline-primary btn-lg filter-btn border-0 text-start text-white"
-                            data-category="Accessories">
-                            Accessories
-                        </button>
-                        <button class="btn btn-outline-primary btn-lg filter-btn border-0 text-start text-white"
-                            data-category="Clothing">
-                            Clothing
-                        </button>
+                <div class="p-3">
+                    <p class="text-uppercase text-secondary fw-bold">Categories</p>
+
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-outline-primary filter-btn active" data-category="all">All</button>
+                        <button class="btn btn-outline-primary filter-btn"
+                            data-category="Electronics">Electronics</button>
+                        <button class="btn btn-outline-primary filter-btn"
+                            data-category="Accessories">Accessories</button>
+                        <button class="btn btn-outline-primary filter-btn" data-category="Clothing">Clothing</button>
                     </div>
-                    <button class="btn btn-primary w-100 mt-5">
-                        Print Stock List
-                    </button>
-                </div>
-            </div>
 
-            <!-- offcanvas sidebar -->
-            <div class="offcanvas offcanvas-start col-12 col-md-3 col-lg-2 bg-dark text-white p-0 " tabindex="-1"
-                id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
-                <div class="offcanvas-header p-4 border-bottom">
-                    <h4 class="offcanvas-title fw-bold mb-0" id="offcanvasExampleLabel">📦 InvTrack</h4>
+                    <button class="btn btn-primary w-100 mt-4" onclick="window.print()">Print Stock</button>
                 </div>
+            </aside>
 
-                <div class="offcanvas-body d-flex flex-column p-3">
-                    <p class="text-uppercase text-secondary fw-bold mb-3">Categories</p>
-                    <div class="d-flex flex-column p-4 gap-2 ">
-                        <button class="btn btn-outline-primary btn-lg filter-btn active border-0 text-start"
-                            data-category="all">
-                            All
-                        </button>
-                        <button class="btn btn-outline-primary btn-lg filter-btn border-0 text-start text-white"
-                            data-category="Electronics">
-                            Electronics
-                        </button>
-                        <button class="btn btn-outline-primary btn-lg filter-btn border-0 text-start text-white"
-                            data-category="Accessories">
-                            Accessories
-                        </button>
-                        <button class="btn btn-outline-primary btn-lg filter-btn border-0 text-start text-white"
-                            data-category="Clothing">
-                            Clothing
-                        </button>
-                    </div>
-                    <button class="btn btn-primary w-100 mt-5">
-                        Print Stock List
-                    </button>
-                </div>
-            </div>
-
-            <!-- div Content -->
-            <div class="col-12 col-md-9 col-lg-10 p-0">
+            <!-- Main -->
+            <main class="col-md-10 p-0">
 
                 <!-- Navbar -->
                 <nav class="navbar bg-white border-bottom px-4 py-3">
-                    <button class="btn-sm bg-dark d-md-none rounded-3" type="button" data-bs-toggle="offcanvas"
-                        data-bs-target="#offcanvasExample" aria-controls="offcanvasExample">
-                        <i class="bi bi-list text-white "></i>
-                    </button>
-                    <div>
-                        <h5 class="fw-bold mb-0 fs-2">Inventory Overview</h5>
-                        <small class="text-muted fs-5">Total Inventory Value: $29,343</small>
-                    </div>
+                    <h4 class="fw-bold mb-0">Inventory Overview</h4>
 
                     <div class="d-flex gap-2">
-                        <button class="btn btn-outline-secondary btn-lg">
-                            Export Report
+                        <button id="themeToggle" class="btn btn-outline-dark">
+                            <i class="bi bi-moon"></i>
                         </button>
-                        <button class="btn btn-primary btn-lg">
+
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addProductModal">
                             + New Product
                         </button>
                     </div>
                 </nav>
 
-                <!-- Content Area -->
+                <!-- Content -->
                 <div class="p-4">
-                    <div class="row g-3">
 
-                        <div class="col-12 col-md-6 col-lg-3">
-                            <div class="card border-primary bg-primary-subtle h-100 opacity-75 rounded-4">
+                    <!-- Stats -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-3">
+                            <div class="card border-primary bg-primary-subtle">
                                 <div class="card-body">
-                                    <h6 class="card-title text-primary">TOTAL ITEMS</h6>
-                                    <p class="fs-4 mb-0 fw-bold total"></p>
+                                    <h6>Total Items</h6>
+                                    <h3 id="totalItems">0</h3>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="col-12 col-md-6 col-lg-3">
-                            <div class="card border-danger bg-danger-subtle h-100 opacity-75 rounded-4">
+                        <div class="col-md-3">
+                            <div class="card border-danger bg-danger-subtle">
                                 <div class="card-body">
-                                    <h6 class="card-title text-danger">LOW STOCK</h6>
-                                    <p class="fs-4 mb-0 fw-bold">5</p>
+                                    <h6>Low Stock</h6>
+                                    <h3 id="lowStock">0</h3>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="col-12 col-md-6 col-lg-3">
-                            <div class="card border-success bg-success-subtle h-100 opacity-75 rounded-4">
+                        <div class="col-md-3">
+                            <div class="card border-success bg-success-subtle">
                                 <div class="card-body">
-                                    <h6 class="card-title text-success">ACTIVE SUPPLIERS</h6>
-                                    <p class="fs-4 mb-0 fw-bold">9</p>
+                                    <h6>Suppliers</h6>
+                                    <h3>9</h3>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="col-12 col-md-6 col-lg-3">
-                            <div class="card border-warning bg-warning-subtle h-100 opacity-75 rounded-4">
+                        <div class="col-md-3">
+                            <div class="card border-warning bg-warning-subtle">
                                 <div class="card-body">
-                                    <h6 class="card-title text-warning">TODAY'S TRANSACTIONS</h6>
-                                    <p class="fs-4 mb-0 fw-bold">24</p>
+                                    <h6>Today Transactions</h6>
+                                    <h3>24</h3>
                                 </div>
                             </div>
                         </div>
-
                     </div>
-                    <!-- Inventory Table Section -->
-                    <div class="card mt-4">
+
+                    <!-- Table -->
+                    <div class="card">
                         <div class="card-body">
-
-                            <!-- Table Header -->
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h6 class="mb-0 fw-bold">Inventory</h6>
-
-                                <div class="d-flex gap-2">
-                                    <input type="text" class="form-control form-control-sm" placeholder="Search product"
-                                        style="max-width: 200px;">
-                                    <button class="btn btn-outline-secondary btn-sm">
-                                        Filter
-                                    </button>
-                                </div>
+                            <div class="d-flex justify-content-between mb-3">
+                                <h5 class="fw-bold">Inventory</h5>
+                                <input id="searchInput" class="form-control form-control-sm w-25"
+                                    placeholder="Search...">
                             </div>
 
-                            <!-- Table -->
-                            <div class="table-responsive-sm">
-                                <table id="productTable" class="table table-sm align-middle">
+                            <div class="table-responsive">
+                                <table class="table table-sm align-middle" id="productTable">
                                     <thead class="table-primary">
                                         <tr>
                                             <th>#</th>
                                             <th>Product</th>
-                                            <th>Product ID</th>
+                                            <th>ID</th>
                                             <th>Category</th>
                                             <th>Location</th>
                                             <th>Available</th>
                                             <th>Reserved</th>
                                             <th>On Hand</th>
-                                            <th>Action</th>
                                         </tr>
                                     </thead>
-
                                     <tbody>
                                         <tr data-category="Electronics">
-                                            <td>01</td>
-                                            <td>Macbook Pro M1 2020</td>
-                                            <td>#LW102012</td>
-                                            <td><span class="badge bg-light text-dark">Electronics</span></td>
-                                            <td>Warehouse 1</td>
+                                            <td>1</td>
+                                            <td>MacBook Pro M1</td>
+                                            <td>#P001</td>
+                                            <td>Electronics</td>
+                                            <td>WH1</td>
                                             <td>120</td>
-                                            <td>120</td>
+                                            <td>20</td>
                                             <td>100</td>
-                                            <td>
-                                                <button class="btn btn-success btn-sm"><i
-                                                        class="bi bi-eye-fill"></i></button>
-                                                <button class="btn btn-primary btn-sm"><i
-                                                        class="bi bi-pencil-fill"></i></button>
-                                                <button class="btn btn-danger btn-sm"><i
-                                                        class="bi bi-trash"></i></button>
-                                            </td>
                                         </tr>
-
-                                        <tr>
-                                            <td>02</td>
-                                            <td>Mechanical Keyboard</td>
-                                            <td>#LW102013</td>
-                                            <td><span class="badge bg-light text-dark">Accessories</span></td>
-                                            <td>Warehouse 2</td>
-                                            <td>230</td>
-                                            <td>230</td>
-                                            <td>205</td>
-                                            <td>
-                                                <button class="btn btn-success btn-sm"><i
-                                                        class="bi bi-eye-fill"></i></button>
-                                                <button class="btn btn-primary btn-sm"><i
-                                                        class="bi bi-pencil-fill"></i></button>
-                                                <button class="btn btn-danger btn-sm"><i
-                                                        class="bi bi-trash"></i></button>
-                                            </td>
-                                        </tr>
-
                                         <tr data-category="Accessories">
-                                            <td>03</td>
+                                            <td>2</td>
                                             <td>Wireless Mouse</td>
-                                            <td>#LW102014</td>
-                                            <td><span class="badge bg-light text-dark">Accessories</span></td>
-                                            <td>Warehouse 3</td>
-                                            <td>1250</td>
-                                            <td>1250</td>
-                                            <td>1130</td>
-                                            <td>
-                                                <button class="btn btn-success btn-sm"><i
-                                                        class="bi bi-eye-fill"></i></button>
-                                                <button class="btn btn-primary btn-sm"><i
-                                                        class="bi bi-pencil-fill"></i></button>
-                                                <button class="btn btn-danger btn-sm"><i
-                                                        class="bi bi-trash"></i></button>
-                                            </td>
-                                        </tr>
-
-                                        <tr data-category="Accessories">
-                                            <td>04</td>
-                                            <td>Titan Smart Watch</td>
-                                            <td>#LW102015</td>
-                                            <td><span class="badge bg-light text-dark">Accessories</span></td>
-                                            <td>Warehouse 4</td>
-                                            <td>600</td>
-                                            <td>600</td>
-                                            <td>560</td>
-                                            <td>
-                                                <button class="btn btn-success btn-sm"><i
-                                                        class="bi bi-eye-fill"></i></button>
-                                                <button class="btn btn-primary btn-sm"><i
-                                                        class="bi bi-pencil-fill"></i></button>
-                                                <button class="btn btn-danger btn-sm"><i
-                                                        class="bi bi-trash"></i></button>
-                                            </td>
-                                        </tr>
-
-                                        <tr data-category="Accessories">
-                                            <td>05</td>
-                                            <td>Sandisk Hard Disk 1TB</td>
-                                            <td>#LW102016</td>
-                                            <td><span class="badge bg-light text-dark">Accessories</span></td>
-                                            <td>Warehouse 3</td>
-                                            <td>250</td>
-                                            <td>250</td>
-                                            <td>190</td>
-                                            <td>
-                                                <button class="btn btn-success btn-sm"><i
-                                                        class="bi bi-eye-fill"></i></button>
-                                                <button class="btn btn-primary btn-sm"><i
-                                                        class="bi bi-pencil-fill"></i></button>
-                                                <button class="btn btn-danger btn-sm"><i
-                                                        class="bi bi-trash"></i></button>
-                                            </td>
-                                        </tr>
-
-                                        <tr data-category="Accessories">
-                                            <td>06</td>
-                                            <td>iWatch 4th Generation</td>
-                                            <td>#LW102017</td>
-                                            <td><span class="badge bg-light text-dark">Watch</span></td>
-                                            <td>Warehouse 5</td>
-                                            <td>158</td>
-                                            <td>158</td>
-                                            <td>128</td>
-                                            <td>
-                                                <button class="btn btn-success btn-sm"><i
-                                                        class="bi bi-eye-fill"></i></button>
-                                                <button class="btn btn-primary btn-sm"><i
-                                                        class="bi bi-pencil-fill"></i></button>
-                                                <button class="btn btn-danger btn-sm"><i
-                                                        class="bi bi-trash"></i></button>
-                                            </td>
-                                        </tr>
-
-                                        <tr data-category="Accessories">
-                                            <td>07</td>
-                                            <td>Sony Wireless Headphones</td>
-                                            <td>#LW102018</td>
-                                            <td><span class="badge bg-light text-dark">Headphone</span></td>
-                                            <td>Warehouse 2</td>
-                                            <td>460</td>
-                                            <td>460</td>
-                                            <td>415</td>
-                                            <td>
-                                                <button class="btn btn-success btn-sm"><i
-                                                        class="bi bi-eye-fill"></i></button>
-                                                <button class="btn btn-primary btn-sm"><i
-                                                        class="bi bi-pencil-fill"></i></button>
-                                                <button class="btn btn-danger btn-sm"><i
-                                                        class="bi bi-trash"></i></button>
-                                            </td>
-                                        </tr>
-
-                                        <tr data-category="Electronics">
-                                            <td>08</td>
-                                            <td>Nikon DSLR Camera</td>
-                                            <td>#LW102019</td>
-                                            <td><span class="badge bg-light text-dark">Electronics</span></td>
-                                            <td>Warehouse 1</td>
-                                            <td>100</td>
-                                            <td>100</td>
-                                            <td>90</td>
-                                            <td>
-                                                <button class="btn btn-success btn-sm"><i
-                                                        class="bi bi-eye-fill"></i></button>
-                                                <button class="btn btn-primary btn-sm"><i
-                                                        class="bi bi-pencil-fill"></i></button>
-                                                <button class="btn btn-danger btn-sm"><i
-                                                        class="bi bi-trash"></i></button>
-                                            </td>
-                                        </tr>
-
-                                        <tr data-category="Electronics">
-                                            <td>09</td>
-                                            <td>Canon 6D Camera</td>
-                                            <td>#LW102020</td>
-                                            <td><span class="badge bg-light text-dark">Electronics</span></td>
-                                            <td>Warehouse 5</td>
-                                            <td>48</td>
-                                            <td>48</td>
-                                            <td>38</td>
-                                            <td>
-                                                <button class="btn btn-success btn-sm"><i
-                                                        class="bi bi-eye-fill"></i></button>
-                                                <button class="btn btn-primary btn-sm"><i
-                                                        class="bi bi-pencil-fill"></i></button>
-                                                <button class="btn btn-danger btn-sm"><i
-                                                        class="bi bi-trash"></i></button>
-                                            </td>
-                                        </tr>
-                                        <tr data-category="Electronics">
+                                            <td>#P002</td>
+                                            <td>Accessories</td>
+                                            <td>WH2</td>
+                                            <td>40</td>
                                             <td>10</td>
-                                            <td>HP Laptop Intel i7 2023</td>
-                                            <td>#LW102021</td>
-                                            <td><span class="badge bg-light text-dark">Electronics</span></td>
-                                            <td>Warehouse 4</td>
-                                            <td>340</td>
-                                            <td>340</td>
-                                            <td>312</td>
-                                            <td>
-                                                <button class="btn btn-success btn-sm"><i
-                                                        class="bi bi-eye-fill"></i></button>
-                                                <button class="btn btn-primary btn-sm"><i
-                                                        class="bi bi-pencil-fill"></i></button>
-                                                <button class="btn btn-danger btn-sm"><i
-                                                        class="bi bi-trash"></i></button>
-                                            </td>
-                                        </tr>
-
-                                        <tr data-category="Electronics">
-                                            <td>11</td>
-                                            <td>Lenovo ThinkPad X1</td>
-                                            <td>#LW102022</td>
-                                            <td><span class="badge bg-light text-dark">Electronics</span></td>
-                                            <td>Warehouse 2</td>
-                                            <td>210</td>
-                                            <td>210</td>
-                                            <td>195</td>
-                                            <td>
-                                                <button class="btn btn-success btn-sm"><i
-                                                        class="bi bi-eye-fill"></i></button>
-                                                <button class="btn btn-primary btn-sm"><i
-                                                        class="bi bi-pencil-fill"></i></button>
-                                                <button class="btn btn-danger btn-sm"><i
-                                                        class="bi bi-trash"></i></button>
-                                            </td>
-                                        </tr>
-                                        <tr data-category="Accessories">
-                                            <td>12</td>
-                                            <td>Logitech Webcam HD</td>
-                                            <td>#LW102023</td>
-                                            <td><span class="badge bg-light text-dark">Accessories</span></td>
-                                            <td>Warehouse 3</td>
-                                            <td>520</td>
-                                            <td>520</td>
-                                            <td>498</td>
-                                            <td>
-                                                <button class="btn btn-success btn-sm"><i
-                                                        class="bi bi-eye-fill"></i></button>
-                                                <button class="btn btn-primary btn-sm"><i
-                                                        class="bi bi-pencil-fill"></i></button>
-                                                <button class="btn btn-danger btn-sm"><i
-                                                        class="bi bi-trash"></i></button>
-                                            </td>
+                                            <td>30</td>
                                         </tr>
                                         <tr data-category="Clothing">
-                                            <td>13</td>
+                                            <td>3</td>
+                                            <td>Unisex Hoodie</td>
+                                            <td>#P003</td>
+                                            <td>Clothing</td>
+                                            <td>WH3</td>
+                                            <td>200</td>
+                                            <td>50</td>
+                                            <td>150</td>
+                                        </tr>
+                                        <tr data-category="Electronics">
+                                            <td>4</td>
+                                            <td>iPad Pro 12.9</td>
+                                            <td>#P004</td>
+                                            <td>Electronics</td>
+                                            <td>WH1</td>
+                                            <td>35</td>
+                                            <td>5</td>
+                                            <td>30</td>
+                                        </tr>
+                                        <tr data-category="Accessories">
+                                            <td>5</td>
+                                            <td>Mechanical Keyboard</td>
+                                            <td>#P005</td>
+                                            <td>Accessories</td>
+                                            <td>WH2</td>
+                                            <td>180</td>
+                                            <td>30</td>
+                                            <td>150</td>
+                                        </tr>
+                                        <tr data-category="Clothing">
+                                            <td>6</td>
                                             <td>Men Cotton T-Shirt</td>
-                                            <td>#LW102024</td>
-                                            <td><span class="badge bg-light text-dark">Clothing</span></td>
-                                            <td>Warehouse 2</td>
+                                            <td>#P006</td>
+                                            <td>Clothing</td>
+                                            <td>WH4</td>
                                             <td>500</td>
                                             <td>120</td>
                                             <td>380</td>
-                                            <td>
-                                                <button class="btn btn-success btn-sm"><i
-                                                        class="bi bi-eye-fill"></i></button>
-                                                <button class="btn btn-primary btn-sm"><i
-                                                        class="bi bi-pencil-fill"></i></button>
-                                                <button class="btn btn-danger btn-sm"><i
-                                                        class="bi bi-trash"></i></button>
-                                            </td>
                                         </tr>
-
-                                        <tr data-category="Clothing">
-                                            <td>14</td>
-                                            <td>Women Denim Jacket</td>
-                                            <td>#LW102025</td>
-                                            <td><span class="badge bg-light text-dark">Clothing</span></td>
-                                            <td>Warehouse 4</td>
-                                            <td>220</td>
+                                        <tr data-category="Electronics">
+                                            <td>7</td>
+                                            <td>Dell XPS 13</td>
+                                            <td>#P007</td>
+                                            <td>Electronics</td>
+                                            <td>WH5</td>
                                             <td>60</td>
-                                            <td>160</td>
-                                            <td>
-                                                <button class="btn btn-success btn-sm"><i
-                                                        class="bi bi-eye-fill"></i></button>
-                                                <button class="btn btn-primary btn-sm"><i
-                                                        class="bi bi-pencil-fill"></i></button>
-                                                <button class="btn btn-danger btn-sm"><i
-                                                        class="bi bi-trash"></i></button>
-                                            </td>
+                                            <td>20</td>
+                                            <td>40</td>
                                         </tr>
-
-                                        <tr data-category="Clothing">
-                                            <td>15</td>
-                                            <td>Unisex Hoodie</td>
-                                            <td>#LW102026</td>
-                                            <td><span class="badge bg-light text-dark">Clothing</span></td>
-                                            <td>Warehouse 1</td>
-                                            <td>340</td>
-                                            <td>90</td>
-                                            <td>250</td>
-                                            <td>
-                                                <button class="btn btn-success btn-sm"><i
-                                                        class="bi bi-eye-fill"></i></button>
-                                                <button class="btn btn-primary btn-sm"><i
-                                                        class="bi bi-pencil-fill"></i></button>
-                                                <button class="btn btn-danger btn-sm"><i
-                                                        class="bi bi-trash"></i></button>
-                                            </td>
+                                        <tr data-category="Accessories">
+                                            <td>8</td>
+                                            <td>USB-C Hub</td>
+                                            <td>#P008</td>
+                                            <td>Accessories</td>
+                                            <td>WH1</td>
+                                            <td>300</td>
+                                            <td>60</td>
+                                            <td>240</td>
                                         </tr>
-
                                         <tr data-category="Clothing">
-                                            <td>16</td>
-                                            <td>Sports Running Shoes</td>
-                                            <td>#LW102027</td>
-                                            <td><span class="badge bg-light text-dark">Clothing</span></td>
-                                            <td>Warehouse 5</td>
+                                            <td>9</td>
+                                            <td>Sports Shoes</td>
+                                            <td>#P009</td>
+                                            <td>Clothing</td>
+                                            <td>WH3</td>
                                             <td>180</td>
                                             <td>40</td>
                                             <td>140</td>
-                                            <td>
-                                                <button class="btn btn-success btn-sm"><i
-                                                        class="bi bi-eye-fill"></i></button>
-                                                <button class="btn btn-primary btn-sm"><i
-                                                        class="bi bi-pencil-fill"></i></button>
-                                                <button class="btn btn-danger btn-sm"><i
-                                                        class="bi bi-trash"></i></button>
-                                            </td>
-                                        </tr>
-
-                                        <tr data-category="Clothing">
-                                            <td>17</td>
-                                            <td>Leather Belt – Brown</td>
-                                            <td>#LW102028</td>
-                                            <td><span class="badge bg-light text-dark">Clothing</span></td>
-                                            <td>Warehouse 3</td>
-                                            <td>410</td>
-                                            <td>110</td>
-                                            <td>300</td>
-                                            <td>
-                                                <button class="btn btn-success btn-sm"><i
-                                                        class="bi bi-eye-fill"></i></button>
-                                                <button class="btn btn-primary btn-sm"><i
-                                                        class="bi bi-pencil-fill"></i></button>
-                                                <button class="btn btn-danger btn-sm"><i
-                                                        class="bi bi-trash"></i></button>
-                                            </td>
                                         </tr>
                                         <tr data-category="Electronics">
-                                            <td>18</td>
-                                            <td>Samsung Galaxy Tab S9</td>
-                                            <td>#LW102029</td>
-                                            <td><span class="badge bg-light text-dark">Electronics</span></td>
-                                            <td>Warehouse 1</td>
+                                            <td>10</td>
+                                            <td>Samsung Galaxy Tab</td>
+                                            <td>#P010</td>
+                                            <td>Electronics</td>
+                                            <td>WH4</td>
                                             <td>95</td>
                                             <td>25</td>
                                             <td>70</td>
-                                            <td>
-                                                <button class="btn btn-success btn-sm"><i
-                                                        class="bi bi-eye-fill"></i></button>
-                                                <button class="btn btn-primary btn-sm"><i
-                                                        class="bi bi-pencil-fill"></i></button>
-                                                <button class="btn btn-danger btn-sm"><i
-                                                        class="bi bi-trash"></i></button>
-                                            </td>
                                         </tr>
 
                                         <tr data-category="Accessories">
-                                            <td>19</td>
-                                            <td>USB-C Hub 7-in-1</td>
-                                            <td>#LW102030</td>
-                                            <td><span class="badge bg-light text-dark">Accessories</span></td>
-                                            <td>Warehouse 2</td>
-                                            <td>430</td>
-                                            <td>90</td>
-                                            <td>340</td>
-                                            <td>
-                                                <button class="btn btn-success btn-sm"><i
-                                                        class="bi bi-eye-fill"></i></button>
-                                                <button class="btn btn-primary btn-sm"><i
-                                                        class="bi bi-pencil-fill"></i></button>
-                                                <button class="btn btn-danger btn-sm"><i
-                                                        class="bi bi-trash"></i></button>
-                                            </td>
+                                            <td>11</td>
+                                            <td>Bluetooth Headphones</td>
+                                            <td>#P011</td>
+                                            <td>Accessories</td>
+                                            <td>WH2</td>
+                                            <td>460</td>
+                                            <td>45</td>
+                                            <td>415</td>
                                         </tr>
-
                                         <tr data-category="Clothing">
-                                            <td>20</td>
-                                            <td>Casual Polo Shirt</td>
-                                            <td>#LW102031</td>
-                                            <td><span class="badge bg-light text-dark">Clothing</span></td>
-                                            <td>Warehouse 3</td>
-                                            <td>360</td>
-                                            <td>80</td>
-                                            <td>280</td>
-                                            <td>
-                                                <button class="btn btn-success btn-sm"><i
-                                                        class="bi bi-eye-fill"></i></button>
-                                                <button class="btn btn-primary btn-sm"><i
-                                                        class="bi bi-pencil-fill"></i></button>
-                                                <button class="btn btn-danger btn-sm"><i
-                                                        class="bi bi-trash"></i></button>
-                                            </td>
+                                            <td>12</td>
+                                            <td>Denim Jacket</td>
+                                            <td>#P012</td>
+                                            <td>Clothing</td>
+                                            <td>WH5</td>
+                                            <td>220</td>
+                                            <td>60</td>
+                                            <td>160</td>
                                         </tr>
-
                                         <tr data-category="Electronics">
-                                            <td>21</td>
-                                            <td>Apple AirPods Pro (2nd Gen)</td>
-                                            <td>#LW102032</td>
-                                            <td><span class="badge bg-light text-dark">Electronics</span></td>
-                                            <td>Warehouse 4</td>
-                                            <td>150</td>
-                                            <td>35</td>
-                                            <td>115</td>
-                                            <td>
-                                                <button class="btn btn-success btn-sm"><i
-                                                        class="bi bi-eye-fill"></i></button>
-                                                <button class="btn btn-primary btn-sm"><i
-                                                        class="bi bi-pencil-fill"></i></button>
-                                                <button class="btn btn-danger btn-sm"><i
-                                                        class="bi bi-trash"></i></button>
-                                            </td>
+                                            <td>13</td>
+                                            <td>Canon EOS 6D</td>
+                                            <td>#P013</td>
+                                            <td>Electronics</td>
+                                            <td>WH1</td>
+                                            <td>48</td>
+                                            <td>10</td>
+                                            <td>38</td>
                                         </tr>
-
+                                        <tr data-category="Accessories">
+                                            <td>14</td>
+                                            <td>External HDD 1TB</td>
+                                            <td>#P014</td>
+                                            <td>Accessories</td>
+                                            <td>WH3</td>
+                                            <td>250</td>
+                                            <td>60</td>
+                                            <td>190</td>
+                                        </tr>
                                         <tr data-category="Clothing">
+                                            <td>15</td>
+                                            <td>Leather Belt</td>
+                                            <td>#P015</td>
+                                            <td>Clothing</td>
+                                            <td>WH4</td>
+                                            <td>410</td>
+                                            <td>110</td>
+                                            <td>300</td>
+                                        </tr>
+                                        <tr data-category="Electronics">
+                                            <td>16</td>
+                                            <td>HP Pavilion Laptop</td>
+                                            <td>#P016</td>
+                                            <td>Electronics</td>
+                                            <td>WH2</td>
+                                            <td>340</td>
+                                            <td>28</td>
+                                            <td>312</td>
+                                        </tr>
+                                        <tr data-category="Accessories">
+                                            <td>17</td>
+                                            <td>Webcam HD</td>
+                                            <td>#P017</td>
+                                            <td>Accessories</td>
+                                            <td>WH3</td>
+                                            <td>520</td>
                                             <td>22</td>
-                                            <td>Winter Jacket – Waterproof</td>
-                                            <td>#LW102033</td>
-                                            <td><span class="badge bg-light text-dark">Clothing</span></td>
-                                            <td>Warehouse 5</td>
+                                            <td>498</td>
+                                        </tr>
+                                        <tr data-category="Clothing">
+                                            <td>18</td>
+                                            <td>Winter Jacket</td>
+                                            <td>#P018</td>
+                                            <td>Clothing</td>
+                                            <td>WH1</td>
                                             <td>140</td>
                                             <td>50</td>
                                             <td>90</td>
-                                            <td>
-                                                <button class="btn btn-success btn-sm"><i
-                                                        class="bi bi-eye-fill"></i></button>
-                                                <button class="btn btn-primary btn-sm"><i
-                                                        class="bi bi-pencil-fill"></i></button>
-                                                <button class="btn btn-danger btn-sm"><i
-                                                        class="bi bi-trash"></i></button>
-                                            </td>
                                         </tr>
-
-                                        <tr data-category="Accessories">
-                                            <td>23</td>
-                                            <td>Bluetooth Keyboard</td>
-                                            <td>#LW102034</td>
-                                            <td><span class="badge bg-light text-dark">Accessories</span></td>
-                                            <td>Warehouse 1</td>
-                                            <td>275</td>
-                                            <td>65</td>
-                                            <td>210</td>
-                                            <td>
-                                                <button class="btn btn-success btn-sm"><i
-                                                        class="bi bi-eye-fill"></i></button>
-                                                <button class="btn btn-primary btn-sm"><i
-                                                        class="bi bi-pencil-fill"></i></button>
-                                                <button class="btn btn-danger btn-sm"><i
-                                                        class="bi bi-trash"></i></button>
-                                            </td>
-                                        </tr>
-
                                         <tr data-category="Electronics">
-                                            <td>24</td>
-                                            <td>LG UltraWide Monitor 34"</td>
-                                            <td>#LW102035</td>
-                                            <td><span class="badge bg-light text-dark">Electronics</span></td>
-                                            <td>Warehouse 2</td>
+                                            <td>19</td>
+                                            <td>LG UltraWide Monitor</td>
+                                            <td>#P019</td>
+                                            <td>Electronics</td>
+                                            <td>WH4</td>
                                             <td>60</td>
                                             <td>18</td>
                                             <td>42</td>
-                                            <td>
-                                                <button class="btn btn-success btn-sm"><i
-                                                        class="bi bi-eye-fill"></i></button>
-                                                <button class="btn btn-primary btn-sm"><i
-                                                        class="bi bi-pencil-fill"></i></button>
-                                                <button class="btn btn-danger btn-sm"><i
-                                                        class="bi bi-trash"></i></button>
-                                            </td>
+                                        </tr>
+                                        <tr data-category="Accessories">
+                                            <td>20</td>
+                                            <td>Portable Power Bank</td>
+                                            <td>#P020</td>
+                                            <td>Accessories</td>
+                                            <td>WH5</td>
+                                            <td>310</td>
+                                            <td>80</td>
+                                            <td>230</td>
                                         </tr>
 
+                                        <tr data-category="Clothing">
+                                            <td>21</td>
+                                            <td>Casual Polo Shirt</td>
+                                            <td>#P021</td>
+                                            <td>Clothing</td>
+                                            <td>WH2</td>
+                                            <td>360</td>
+                                            <td>80</td>
+                                            <td>280</td>
+                                        </tr>
+                                        <tr data-category="Electronics">
+                                            <td>22</td>
+                                            <td>Apple AirPods Pro</td>
+                                            <td>#P022</td>
+                                            <td>Electronics</td>
+                                            <td>WH3</td>
+                                            <td>150</td>
+                                            <td>35</td>
+                                            <td>115</td>
+                                        </tr>
+                                        <tr data-category="Accessories">
+                                            <td>23</td>
+                                            <td>Bluetooth Keyboard</td>
+                                            <td>#P023</td>
+                                            <td>Accessories</td>
+                                            <td>WH1</td>
+                                            <td>275</td>
+                                            <td>65</td>
+                                            <td>210</td>
+                                        </tr>
+                                        <tr data-category="Clothing">
+                                            <td>24</td>
+                                            <td>Training Shorts</td>
+                                            <td>#P024</td>
+                                            <td>Clothing</td>
+                                            <td>WH4</td>
+                                            <td>420</td>
+                                            <td>120</td>
+                                            <td>300</td>
+                                        </tr>
+                                        <tr data-category="Electronics">
+                                            <td>25</td>
+                                            <td>Lenovo ThinkPad X1</td>
+                                            <td>#P025</td>
+                                            <td>Electronics</td>
+                                            <td>WH2</td>
+                                            <td>210</td>
+                                            <td>15</td>
+                                            <td>195</td>
+                                        </tr>
+
+                                        <!-- 26–50 -->
+                                        <tr data-category="Accessories">
+                                            <td>26</td>
+                                            <td>USB Flash Drive 64GB</td>
+                                            <td>#P026</td>
+                                            <td>Accessories</td>
+                                            <td>WH1</td>
+                                            <td>600</td>
+                                            <td>100</td>
+                                            <td>500</td>
+                                        </tr>
+                                        <tr data-category="Clothing">
+                                            <td>27</td>
+                                            <td>Baseball Cap</td>
+                                            <td>#P027</td>
+                                            <td>Clothing</td>
+                                            <td>WH3</td>
+                                            <td>280</td>
+                                            <td>60</td>
+                                            <td>220</td>
+                                        </tr>
+                                        <tr data-category="Electronics">
+                                            <td>28</td>
+                                            <td>Smart Watch Series 8</td>
+                                            <td>#P028</td>
+                                            <td>Electronics</td>
+                                            <td>WH5</td>
+                                            <td>158</td>
+                                            <td>30</td>
+                                            <td>128</td>
+                                        </tr>
+                                        <tr data-category="Accessories">
+                                            <td>29</td>
+                                            <td>Phone Stand</td>
+                                            <td>#P029</td>
+                                            <td>Accessories</td>
+                                            <td>WH4</td>
+                                            <td>500</td>
+                                            <td>90</td>
+                                            <td>410</td>
+                                        </tr>
+                                        <tr data-category="Clothing">
+                                            <td>30</td>
+                                            <td>Running Socks</td>
+                                            <td>#P030</td>
+                                            <td>Clothing</td>
+                                            <td>WH2</td>
+                                            <td>650</td>
+                                            <td>150</td>
+                                            <td>500</td>
+                                        </tr>
+
+                                        <tr data-category="Electronics">
+                                            <td>31</td>
+                                            <td>Gaming Mouse</td>
+                                            <td>#P031</td>
+                                            <td>Electronics</td>
+                                            <td>WH3</td>
+                                            <td>85</td>
+                                            <td>20</td>
+                                            <td>65</td>
+                                        </tr>
+                                        <tr data-category="Accessories">
+                                            <td>32</td>
+                                            <td>HDMI Cable</td>
+                                            <td>#P032</td>
+                                            <td>Accessories</td>
+                                            <td>WH1</td>
+                                            <td>900</td>
+                                            <td>200</td>
+                                            <td>700</td>
+                                        </tr>
+                                        <tr data-category="Clothing">
+                                            <td>33</td>
+                                            <td>Leather Wallet</td>
+                                            <td>#P033</td>
+                                            <td>Clothing</td>
+                                            <td>WH5</td>
+                                            <td>190</td>
+                                            <td>40</td>
+                                            <td>150</td>
+                                        </tr>
+                                        <tr data-category="Electronics">
+                                            <td>34</td>
+                                            <td>Asus Gaming Laptop</td>
+                                            <td>#P034</td>
+                                            <td>Electronics</td>
+                                            <td>WH4</td>
+                                            <td>70</td>
+                                            <td>18</td>
+                                            <td>52</td>
+                                        </tr>
+                                        <tr data-category="Accessories">
+                                            <td>35</td>
+                                            <td>Wireless Charger</td>
+                                            <td>#P035</td>
+                                            <td>Accessories</td>
+                                            <td>WH2</td>
+                                            <td>260</td>
+                                            <td>60</td>
+                                            <td>200</td>
+                                        </tr>
+
+                                        <tr data-category="Clothing">
+                                            <td>36</td>
+                                            <td>Rain Coat</td>
+                                            <td>#P036</td>
+                                            <td>Clothing</td>
+                                            <td>WH3</td>
+                                            <td>120</td>
+                                            <td>40</td>
+                                            <td>80</td>
+                                        </tr>
+                                        <tr data-category="Electronics">
+                                            <td>37</td>
+                                            <td>GoPro Hero 11</td>
+                                            <td>#P037</td>
+                                            <td>Electronics</td>
+                                            <td>WH1</td>
+                                            <td>55</td>
+                                            <td>20</td>
+                                            <td>35</td>
+                                        </tr>
+                                        <tr data-category="Accessories">
+                                            <td>38</td>
+                                            <td>Camera Tripod</td>
+                                            <td>#P038</td>
+                                            <td>Accessories</td>
+                                            <td>WH4</td>
+                                            <td>140</td>
+                                            <td>30</td>
+                                            <td>110</td>
+                                        </tr>
+                                        <tr data-category="Clothing">
+                                            <td>39</td>
+                                            <td>Formal Shirt</td>
+                                            <td>#P039</td>
+                                            <td>Clothing</td>
+                                            <td>WH5</td>
+                                            <td>260</td>
+                                            <td>60</td>
+                                            <td>200</td>
+                                        </tr>
+                                        <tr data-category="Electronics">
+                                            <td>40</td>
+                                            <td>Noise Cancelling Headphones</td>
+                                            <td>#P040</td>
+                                            <td>Electronics</td>
+                                            <td>WH2</td>
+                                            <td>90</td>
+                                            <td>35</td>
+                                            <td>55</td>
+                                        </tr>
+
+                                        <tr data-category="Accessories">
+                                            <td>41</td>
+                                            <td>Laptop Sleeve</td>
+                                            <td>#P041</td>
+                                            <td>Accessories</td>
+                                            <td>WH1</td>
+                                            <td>310</td>
+                                            <td>60</td>
+                                            <td>250</td>
+                                        </tr>
+                                        <tr data-category="Clothing">
+                                            <td>42</td>
+                                            <td>Gym Tank Top</td>
+                                            <td>#P042</td>
+                                            <td>Clothing</td>
+                                            <td>WH3</td>
+                                            <td>420</td>
+                                            <td>100</td>
+                                            <td>320</td>
+                                        </tr>
+                                        <tr data-category="Electronics">
+                                            <td>43</td>
+                                            <td>Smart TV 55"</td>
+                                            <td>#P043</td>
+                                            <td>Electronics</td>
+                                            <td>WH5</td>
+                                            <td>45</td>
+                                            <td>15</td>
+                                            <td>30</td>
+                                        </tr>
+                                        <tr data-category="Accessories">
+                                            <td>44</td>
+                                            <td>Ethernet Cable</td>
+                                            <td>#P044</td>
+                                            <td>Accessories</td>
+                                            <td>WH4</td>
+                                            <td>800</td>
+                                            <td>200</td>
+                                            <td>600</td>
+                                        </tr>
+                                        <tr data-category="Clothing">
+                                            <td>45</td>
+                                            <td>Beanie Hat</td>
+                                            <td>#P045</td>
+                                            <td>Clothing</td>
+                                            <td>WH2</td>
+                                            <td>300</td>
+                                            <td>70</td>
+                                            <td>230</td>
+                                        </tr>
+
+                                        <tr data-category="Electronics">
+                                            <td>46</td>
+                                            <td>Surface Pro 9</td>
+                                            <td>#P046</td>
+                                            <td>Electronics</td>
+                                            <td>WH1</td>
+                                            <td>65</td>
+                                            <td>15</td>
+                                            <td>50</td>
+                                        </tr>
+                                        <tr data-category="Accessories">
+                                            <td>47</td>
+                                            <td>USB Microphone</td>
+                                            <td>#P047</td>
+                                            <td>Accessories</td>
+                                            <td>WH3</td>
+                                            <td>110</td>
+                                            <td>25</td>
+                                            <td>85</td>
+                                        </tr>
+                                        <tr data-category="Clothing">
+                                            <td>48</td>
+                                            <td>Sports Jacket</td>
+                                            <td>#P048</td>
+                                            <td>Clothing</td>
+                                            <td>WH4</td>
+                                            <td>160</td>
+                                            <td>45</td>
+                                            <td>115</td>
+                                        </tr>
+                                        <tr data-category="Electronics">
+                                            <td>49</td>
+                                            <td>VR Headset</td>
+                                            <td>#P049</td>
+                                            <td>Electronics</td>
+                                            <td>WH2</td>
+                                            <td>30</td>
+                                            <td>8</td>
+                                            <td>22</td>
+                                        </tr>
+                                        <tr data-category="Accessories">
+                                            <td>50</td>
+                                            <td>Desk Cable Organizer</td>
+                                            <td>#P050</td>
+                                            <td>Accessories</td>
+                                            <td>WH5</td>
+                                            <td>500</td>
+                                            <td>120</td>
+                                            <td>380</td>
+                                        </tr>
                                     </tbody>
+
                                 </table>
-                            </div>
-
-                            <!-- Table Footer -->
-                            <div class="d-flex justify-content-between align-items-center mt-3 small text-muted">
-                                <span>Showing 1 to 10 of 24 entries</span>
-
-                                <nav>
-                                    <ul class="pagination pagination-sm mb-0">
-                                        <li class="page-item active"><a class="page-link" href="#" data-page="1">1</a>
-                                        </li>
-                                        <li class="page-item"><a class="page-link" href="#" data-page="2">2</a></li>
-                                        <li class="page-item"><a class="page-link" href="#" data-page="3">3</a></li>
-                                    </ul>
-
+                                <nav class="mt-3">
+                                    <ul id="pagination" class="pagination justify-content-center"></ul>
                                 </nav>
                             </div>
-
                         </div>
                     </div>
 
                 </div>
+            </main>
+        </div>
+    </div>
 
+    <!-- Add Product Modal -->
+    <div class="modal fade" id="addProductModal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5>Add New Product</h5>
+                    <button class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-6"><input id="pName" class="form-control" placeholder="Product Name"></div>
+                        <div class="col-md-6"><input id="pId" class="form-control" placeholder="Product ID"></div>
+                        <div class="col-md-6">
+                            <select id="pCategory" class="form-select">
+                                <option>Electronics</option>
+                                <option>Accessories</option>
+                                <option>Clothing</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6"><input id="pLocation" class="form-control" placeholder="Warehouse"></div>
+                        <div class="col-md-4"><input id="pAvailable" type="number" class="form-control"
+                                placeholder="Available"></div>
+                        <div class="col-md-4"><input id="pReserved" type="number" class="form-control"
+                                placeholder="Reserved"></div>
+                        <div class="col-md-4"><input id="pOnHand" type="number" class="form-control"
+                                placeholder="On Hand"></div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button id="saveProduct" class="btn btn-primary">Add Product</button>
+                </div>
             </div>
         </div>
     </div>
+
     <script>
-        //category filtering
-        const filterButtons = document.querySelectorAll(".filter-btn");
-        const items = document.querySelectorAll("#productTable tbody tr");
-        const numItems = items.length; 
-        document.querySelector(".total").textContent = numItems;
+        const rows = () => [...document.querySelectorAll("#productTable tbody tr")];
+        const totalItems = document.getElementById("totalItems");
+        const lowStock = document.getElementById("lowStock");
+        const searchInput = document.getElementById("searchInput");
 
-        filterButtons.forEach(btn => {
-            btn.addEventListener("click", () => {
-                const category = btn.dataset.category;
-
-                filterButtons.forEach(b => b.classList.remove("active"));
-                btn.classList.add("active");
-
-                items.forEach(row => {
-                    const rowCategory = row.dataset.category;
-
-                    if (category === "all" || rowCategory === category) {
-                        row.style.display = "";
-                    } else {
-                        row.style.display = "none";
-                    }
-                });
-            });
-        });
-
-        //pagination
-        const rowsPerPage = 10;
-        const table = document.getElementById("productTable");
-        const rows = table.querySelectorAll("tbody tr");
-        const pageLinks = document.querySelectorAll(".page-link");
-
-        function showPage(page) {
-            const start = (page - 1) * rowsPerPage;
-            const end = start + rowsPerPage;
-
-            rows.forEach((row, index) => {
-                if (index >= start && index < end) {
-                    row.style.display = "";
-                } else {
-                    row.style.display = "none";
-                }
-            });
-
-            document.querySelectorAll(".page-item").forEach(li => li.classList.remove("active"));
-            pageLinks[page - 1].parentElement.classList.add("active");
+        function updateStats() {
+            const allRows = rows();
+            totalItems.textContent = allRows.length;
+            lowStock.textContent = allRows.filter(r => +r.children[7].textContent < 50).length;
         }
 
-        pageLinks.forEach(link => {
-            link.addEventListener("click", e => {
-                e.preventDefault();
-                showPage(Number(link.dataset.page));
+        function applyLowStock() {
+            rows().forEach(r => {
+                if (+r.children[7].textContent < 50) r.classList.add("low-stock");
             });
+        }
+
+        updateStats();
+        applyLowStock();
+
+        // Category Filter
+        document.querySelectorAll(".filter-btn").forEach(btn => {
+            btn.onclick = () => {
+                document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+                btn.classList.add("active");
+
+                rows().forEach(row => {
+                    row.style.display =
+                        btn.dataset.category === "all" || row.dataset.category === btn.dataset.category
+                            ? ""
+                            : "none";
+                });
+            };
         });
 
-       
-        showPage(1);
+        // Search
+        searchInput.onkeyup = () => {
+            const value = searchInput.value.toLowerCase();
+            rows().forEach(r => {
+                r.style.display = r.innerText.toLowerCase().includes(value) ? "" : "none";
+            });
+        };
 
+        // Dark Mode
+        document.getElementById("themeToggle").onclick = () => {
+            document.body.classList.toggle("dark-mode");
+        };
+
+        // Add Product
+        document.getElementById("saveProduct").onclick = () => {
+            const tbody = document.querySelector("#productTable tbody");
+
+            const tr = document.createElement("tr");
+            tr.dataset.category = pCategory.value;
+            tr.innerHTML = `
+            <td>${tbody.children.length + 1}</td>
+            <td>${pName.value}</td>
+            <td>${pId.value}</td>
+            <td>${pCategory.value}</td>
+            <td>${pLocation.value}</td>
+            <td>${pAvailable.value}</td>
+            <td>${pReserved.value}</td>
+            <td>${pOnHand.value}</td>
+        `;
+
+            if (+pOnHand.value < 50) tr.classList.add("low-stock");
+
+            tbody.appendChild(tr);
+            updateStats();
+
+            bootstrap.Modal.getInstance(addProductModal).hide();
+            document.querySelectorAll(".modal input").forEach(i => i.value = "");
+        };
+        const rowsPerPage = 10;
+    const table = document.getElementById("productTable");
+    const tbody = table.querySelector("tbody");
+    const pagination = document.getElementById("pagination");
+
+    let currentPage = 1;
+
+    function displayTablePage(page) {
+        const rows = Array.from(tbody.querySelectorAll("tr"));
+        const start = (page - 1) * rowsPerPage;
+        const end = start + rowsPerPage;
+
+        rows.forEach((row, index) => {
+            row.style.display =
+                index >= start && index < end ? "" : "none";
+        });
+    }
+
+    function setupPagination() {
+        pagination.innerHTML = "";
+        const rows = tbody.querySelectorAll("tr");
+        const pageCount = Math.ceil(rows.length / rowsPerPage);
+
+        for (let i = 1; i <= pageCount; i++) {
+            const li = document.createElement("li");
+            li.className = `page-item ${i === currentPage ? "active" : ""}`;
+
+            li.innerHTML = `
+                <a class="page-link" href="#">${i}</a>
+            `;
+
+            li.addEventListener("click", (e) => {
+                e.preventDefault();
+                currentPage = i;
+                displayTablePage(currentPage);
+                setupPagination();
+            });
+
+            pagination.appendChild(li);
+        }
+    }
+
+    // Initial load
+    setupPagination();
+    displayTablePage(currentPage);
+
+    const originalAddProduct = saveBtn.onclick;
+    saveBtn.addEventListener("click", () => {
+        setTimeout(() => {
+            setupPagination();
+            displayTablePage(currentPage);
+        }, 100);
+    });
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
