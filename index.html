@@ -119,14 +119,51 @@
                 </div>
             </aside>
 
+            <div class="offcanvas offcanvas-start bg-dark text-white" data-bs-backdrop="static" tabindex="-1" id="staticBackdrop"
+                aria-labelledby="staticBackdropLabel">
+                <div class="offcanvas-header">  
+                    <button id="themeToggle" class="btn btn-outline-light">
+                            <i class="bi bi-moon"></i>
+                        </button>
+                    <h5 class="offcanvas-title" id="staticBackdropLabel">📦 InvTrack</h5>
+
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-body">
+                    <div class="p-3">
+                    <p class="text-uppercase text-secondary fw-bold">Categories</p>
+
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-outline-primary filter-btn active" data-category="all">All</button>
+                        <button class="btn btn-outline-primary filter-btn"
+                            data-category="Electronics">Electronics</button>
+                        <button class="btn btn-outline-primary filter-btn"
+                            data-category="Accessories">Accessories</button>
+                        <button class="btn btn-outline-primary filter-btn" data-category="Clothing">Clothing</button>
+                    </div>
+
+                        <button class="btn btn-primary w-100 mt-4" data-bs-toggle="modal" data-bs-target="#addProductModal">
+                            + New Product
+                        </button>
+
+                    <button class="btn btn-primary w-100 mt-2" onclick="window.print()">Print Stock</button>
+                </div>
+                </div>
+            </div>
+
             <!-- Main -->
             <main class="col-md-10 p-0">
 
                 <!-- Navbar -->
-                <nav class="navbar bg-white border-bottom px-4 py-3">
+                <nav class="navbar bg-white border-bottom px-4 py-3 d-flex justify-content-between align-baseline">
+                    
+            <button class="btn btn-primary d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#staticBackdrop"
+                aria-controls="staticBackdrop">
+                <i class="bi bi-list"></i>
+            </button>
                     <h4 class="fw-bold mb-0">Inventory Overview</h4>
 
-                    <div class="d-flex gap-2">
+                    <div class="d-flex gap-2 d-none d-md-block">
                         <button id="themeToggle" class="btn btn-outline-dark">
                             <i class="bi bi-moon"></i>
                         </button>
@@ -839,58 +876,58 @@
             document.querySelectorAll(".modal input").forEach(i => i.value = "");
         };
         const rowsPerPage = 10;
-    const table = document.getElementById("productTable");
-    const tbody = table.querySelector("tbody");
-    const pagination = document.getElementById("pagination");
+        const table = document.getElementById("productTable");
+        const tbody = table.querySelector("tbody");
+        const pagination = document.getElementById("pagination");
 
-    let currentPage = 1;
+        let currentPage = 1;
 
-    function displayTablePage(page) {
-        const rows = Array.from(tbody.querySelectorAll("tr"));
-        const start = (page - 1) * rowsPerPage;
-        const end = start + rowsPerPage;
+        function displayTablePage(page) {
+            const rows = Array.from(tbody.querySelectorAll("tr"));
+            const start = (page - 1) * rowsPerPage;
+            const end = start + rowsPerPage;
 
-        rows.forEach((row, index) => {
-            row.style.display =
-                index >= start && index < end ? "" : "none";
-        });
-    }
+            rows.forEach((row, index) => {
+                row.style.display =
+                    index >= start && index < end ? "" : "none";
+            });
+        }
 
-    function setupPagination() {
-        pagination.innerHTML = "";
-        const rows = tbody.querySelectorAll("tr");
-        const pageCount = Math.ceil(rows.length / rowsPerPage);
+        function setupPagination() {
+            pagination.innerHTML = "";
+            const rows = tbody.querySelectorAll("tr");
+            const pageCount = Math.ceil(rows.length / rowsPerPage);
 
-        for (let i = 1; i <= pageCount; i++) {
-            const li = document.createElement("li");
-            li.className = `page-item ${i === currentPage ? "active" : ""}`;
+            for (let i = 1; i <= pageCount; i++) {
+                const li = document.createElement("li");
+                li.className = `page-item ${i === currentPage ? "active" : ""}`;
 
-            li.innerHTML = `
+                li.innerHTML = `
                 <a class="page-link" href="#">${i}</a>
             `;
 
-            li.addEventListener("click", (e) => {
-                e.preventDefault();
-                currentPage = i;
-                displayTablePage(currentPage);
-                setupPagination();
-            });
+                li.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    currentPage = i;
+                    displayTablePage(currentPage);
+                    setupPagination();
+                });
 
-            pagination.appendChild(li);
+                pagination.appendChild(li);
+            }
         }
-    }
 
-    // Initial load
-    setupPagination();
-    displayTablePage(currentPage);
+        // Initial load
+        setupPagination();
+        displayTablePage(currentPage);
 
-    const originalAddProduct = saveBtn.onclick;
-    saveBtn.addEventListener("click", () => {
-        setTimeout(() => {
-            setupPagination();
-            displayTablePage(currentPage);
-        }, 100);
-    });
+        const originalAddProduct = saveBtn.onclick;
+        saveBtn.addEventListener("click", () => {
+            setTimeout(() => {
+                setupPagination();
+                displayTablePage(currentPage);
+            }, 100);
+        });
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
